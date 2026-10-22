@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import com.spark.blog.blog.dto.req.BlogCreateRequest;
 import com.spark.blog.blog.dto.res.BlogResponse;
 import com.spark.blog.blog.entity.Blog;
+import com.spark.blog.blog.exception.BlogNotFoundException;
 import com.spark.blog.blog.repository.BlogRepository;
 import com.spark.blog.blog.service.BlogService;
 import org.springframework.stereotype.Service;
@@ -40,6 +41,13 @@ public class BlogServiceImpl implements BlogService {
                 .stream()
                 .map(this::mapToResponse)
                 .toList();
+    }
+
+    @Override
+    public void deleteBlog(Long blogId) {
+        Blog blog = blogRepository.findById(blogId)
+                .orElseThrow(() -> new BlogNotFoundException("Blog with id " + blogId + " not found"));
+        blogRepository.delete(blog);
     }
 
     private BlogResponse mapToResponse(Blog blog) {
